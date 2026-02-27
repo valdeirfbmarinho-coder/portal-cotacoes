@@ -1,15 +1,14 @@
-// Trava de segurança: Se não tiver logado como admin, expulsa para o login
 if (!localStorage.getItem("adminLogado")) {
     window.location.href = "index.html";
 }
 
 const API_URL = "https://script.google.com/macros/s/AKfycbyggUvTBjty9B179wuL-fe1q0I4JPtYeFbYfPJWTEc7SiGaANn6pc3JbA7E4ax2VOUn/exec";
-
 let todasRespostas = []; 
 
 function carregarMapaPrecos() {
     fetch(API_URL, {
         method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ acao: "listar_respostas" })
     })
     .then(res => res.json())
@@ -64,7 +63,7 @@ document.getElementById("btnOrdenarMenor").addEventListener("click", () => {
     desenharTabela(dadosOrdenados);
 });
 
-// Botão de Exportar para Excel
+// A função de exportar agora vai funcionar porque o botão existe no HTML
 document.getElementById("btnExportar").addEventListener("click", () => {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "Cód. Produto;Cód. Fornecedor;Preço (R$);Marca;Data do Envio\n";
@@ -93,7 +92,6 @@ document.getElementById("btnExportar").addEventListener("click", () => {
     document.body.removeChild(link);
 });
 
-// Sair (Limpando a sessão do Admin)
 document.getElementById("btnSairAdmin").addEventListener("click", () => {
     localStorage.removeItem("adminLogado");
     window.location.href = "index.html";
