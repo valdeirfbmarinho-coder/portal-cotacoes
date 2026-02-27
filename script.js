@@ -1,11 +1,11 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyggUvTBjty9B179wuL-fe1q0I4JPtYeFbYfPJWTEc7SiGaANn6pc3JbA7E4ax2VOUn/exec";
 
-// Muda o texto dos campos dependendo se é fornecedor ou admin
+// Interação visual: Muda o texto dependendo de quem está logando
 document.getElementById('tipoAcesso').addEventListener('change', function(e) {
     const labelCodigo = document.querySelector('label[for="codigo"]');
     if(e.target.value === 'admin') {
         labelCodigo.innerText = 'Usuário Admin';
-        document.getElementById('codigo').placeholder = 'Seu usuário de equipe';
+        document.getElementById('codigo').placeholder = 'Seu usuário da equipe';
     } else {
         labelCodigo.innerText = 'Código do Fornecedor';
         document.getElementById('codigo').placeholder = 'Ex: FORN001';
@@ -27,7 +27,7 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
 
     const dadosEnvio = {
         acao: "login",
-        tipo: tipo,  // Avisa a planilha quem está tentando entrar
+        tipo: tipo,
         id: codigo,
         senha: senha
     };
@@ -39,26 +39,25 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
     .then(resposta => resposta.json())
     .then(dados => {
         if(dados.status === "sucesso") {
-            // Roteamento Inteligente
             if(dados.perfil === "admin") {
                 localStorage.setItem("adminLogado", codigo);
-                window.location.href = "admin.html"; // Joga para a sua tela
+                window.location.href = "admin.html";
             } else {
                 localStorage.setItem("fornecedorLogado", codigo);
                 localStorage.setItem("nomeEmpresa", dados.empresa);
-                window.location.href = "cotacao.html"; // Joga para a tela deles
+                window.location.href = "cotacao.html";
             }
         } else {
             divErro.innerText = dados.mensagem;
             divErro.style.display = "block";
-            btnEntrar.innerText = "Entrar";
+            btnEntrar.innerText = "Entrar no Painel";
             btnEntrar.disabled = false;
         }
     })
     .catch(erro => {
         divErro.innerText = "Erro ao conectar com o servidor.";
         divErro.style.display = "block";
-        btnEntrar.innerText = "Entrar";
+        btnEntrar.innerText = "Entrar no Painel";
         btnEntrar.disabled = false;
     });
 });
