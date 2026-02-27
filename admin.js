@@ -1,3 +1,8 @@
+// Trava de segurança: Se não tiver logado como admin, expulsa para o login
+if (!localStorage.getItem("adminLogado")) {
+    window.location.href = "index.html";
+}
+
 const API_URL = "https://script.google.com/macros/s/AKfycbyggUvTBjty9B179wuL-fe1q0I4JPtYeFbYfPJWTEc7SiGaANn6pc3JbA7E4ax2VOUn/exec";
 
 let todasRespostas = []; 
@@ -9,8 +14,6 @@ function carregarMapaPrecos() {
     })
     .then(res => res.json())
     .then(dados => {
-        console.log("Dados recebidos da planilha:", dados); // Isso vai aparecer no F12 para nos ajudar!
-        
         if(dados.status === "sucesso") {
             todasRespostas = dados.dados;
             desenharTabela(todasRespostas);
@@ -18,10 +21,7 @@ function carregarMapaPrecos() {
             alert("Erro ao puxar dados: " + dados.mensagem);
         }
     })
-    .catch(erro => {
-        console.error("Erro no Fetch:", erro);
-        document.querySelector("#tabelaAdmin tbody").innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Falha na comunicação com o banco de dados.</td></tr>";
-    });
+    .catch(erro => console.error("Erro no Fetch:", erro));
 }
 
 function desenharTabela(dadosParaDesenhar) {
@@ -35,15 +35,10 @@ function desenharTabela(dadosParaDesenhar) {
 
     dadosParaDesenhar.forEach(item => {
         const tr = document.createElement("tr");
-        
-        // --- BLINDAGEM CONTRA VÍRGULAS E TEXTOS ---
         let precoFormatado = "0.00";
         try {
-            // Transforma o número em texto, troca vírgula por ponto, e depois força a ser número de novo
             let precoLimpo = String(item.preco).replace(',', '.');
             precoFormatado = Number(precoLimpo).toFixed(2);
-            
-            // Se der NaN (Não é um número), mostra um aviso em vez de travar o site
             if (isNaN(precoFormatado)) precoFormatado = "Valor Inválido";
         } catch(e) {
             precoFormatado = "Erro";
@@ -61,7 +56,6 @@ function desenharTabela(dadosParaDesenhar) {
 }
 
 document.getElementById("btnOrdenarMenor").addEventListener("click", () => {
-    // Ordenação blindada (ignora textos na hora de calcular)
     const dadosOrdenados = [...todasRespostas].sort((a, b) => {
         let valA = Number(String(a.preco).replace(',', '.'));
         let valB = Number(String(b.preco).replace(',', '.'));
@@ -70,7 +64,38 @@ document.getElementById("btnOrdenarMenor").addEventListener("click", () => {
     desenharTabela(dadosOrdenados);
 });
 
+// Botão de Exportar para Excel
+document.getElementById("btnExportar").addEventListener("click", () => {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Cód. Produto;Cód. Fornecedor;Preço (R$);Marca;Data do Envio\n";
+    
+    const linhasTabela = document.querySelectorAll("#tabelaAdmin tbody tr");
+    linhasTabela.forEach(linha => {
+        const colunas = linha.querySelectorAll("td");
+        if (colunas.length === 5) { 
+            let idProd = colunas[0].innerText;
+            let idForn = colunas[1].innerText;
+            let preco = colunas[2].innerText.replace("R$ ", "").trim(); 
+            let marca = colunas[3].innerText;
+            let data = colunas[4].innerText;
+            
+            let linhaCsv = `${idProd};${idForn};${preco};${marca};${data}`;
+            csvContent += linhaCsv + "\n";
+        }
+    });
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "relatorio_cotacoes.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
+
+// Sair (Limpando a sessão do Admin)
 document.getElementById("btnSairAdmin").addEventListener("click", () => {
+    localStorage.removeItem("adminLogado");
     window.location.href = "index.html";
 });
 
