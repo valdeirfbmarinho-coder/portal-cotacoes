@@ -1,6 +1,6 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyggUvTBjty9B179wuL-fe1q0I4JPtYeFbYfPJWTEc7SiGaANn6pc3JbA7E4ax2VOUn/exec";
 
-// Interação visual: Muda o texto dependendo de quem está logando
+// Muda os textos da tela quando o usuário escolhe Admin ou Fornecedor
 document.getElementById('tipoAcesso').addEventListener('change', function(e) {
     const labelCodigo = document.querySelector('label[for="codigo"]');
     if(e.target.value === 'admin') {
@@ -15,6 +15,7 @@ document.getElementById('tipoAcesso').addEventListener('change', function(e) {
 document.getElementById('formLogin').addEventListener('submit', function(e) {
     e.preventDefault(); 
     
+    // Captura os dados da tela
     const tipo = document.getElementById('tipoAcesso').value;
     const codigo = document.getElementById('codigo').value;
     const senha = document.getElementById('senha').value;
@@ -25,6 +26,7 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
     btnEntrar.disabled = true;
     divErro.style.display = "none";
 
+    // PACOTE DE DADOS (Aqui o 'tipo' vai para a planilha)
     const dadosEnvio = {
         acao: "login",
         tipo: tipo,
@@ -39,6 +41,7 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
     .then(resposta => resposta.json())
     .then(dados => {
         if(dados.status === "sucesso") {
+            // Roteamento: Separa quem vai pra qual tela
             if(dados.perfil === "admin") {
                 localStorage.setItem("adminLogado", codigo);
                 window.location.href = "admin.html";
