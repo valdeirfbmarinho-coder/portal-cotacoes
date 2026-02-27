@@ -14,6 +14,13 @@
             
             <form id="formLogin">
                 <div class="input-group">
+    <label for="tipoAcesso">Tipo de Acesso</label>
+    <select id="tipoAcesso" style="width: 100%; padding: 12px; border: 1px solid #bdc3c7; border-radius: 4px; margin-bottom: 15px; font-size: 14px; background-color: white;">
+        <option value="fornecedor">Sou Fornecedor</option>
+        <option value="admin">Equipe de Compras (Admin)</option>
+    </select>
+</div>
+                <div class="input-group">
                     <label for="codigo">Código do Fornecedor</label>
                     <input type="text" id="codigo" placeholder="Ex: FORN001" required>
                 </div>
@@ -28,4 +35,5 @@
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>
