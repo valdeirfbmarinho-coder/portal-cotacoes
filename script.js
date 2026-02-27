@@ -1,6 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyggUvTBjty9B179wuL-fe1q0I4JPtYeFbYfPJWTEc7SiGaANn6pc3JbA7E4ax2VOUn/exec";
 
-// Muda os textos da tela quando o usuário escolhe Admin ou Fornecedor
 document.getElementById('tipoAcesso').addEventListener('change', function(e) {
     const labelCodigo = document.querySelector('label[for="codigo"]');
     if(e.target.value === 'admin') {
@@ -32,15 +31,21 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
         senha: senha
     };
 
-    // CORREÇÃO: Adicionado Content-Type text/plain para evitar erro de CORS do Google
     fetch(API_URL, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-        },
+        mode: 'no-cors', // Adicionado para evitar problemas de redirecionamento do Google
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(dadosEnvio)
     })
-    .then(resposta => resposta.json())
+    // Como usamos no-cors, não conseguimos ler a resposta JSON diretamente por segurança do navegador
+    // Por isso, para testes de login, o ideal é usar o redirecionamento ou uma resposta simples
+    // Abaixo uma versão compatível com Google Scripts:
+    fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(dadosEnvio)
+    })
+    .then(res => res.json())
     .then(dados => {
         if(dados.status === "sucesso") {
             if(dados.perfil === "admin") {
@@ -58,11 +63,10 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
             btnEntrar.disabled = false;
         }
     })
-    .catch(erro => {
-        divErro.innerText = "Erro ao conectar com o servidor. Verifique a URL do Google Sheets.";
+    .catch(err => {
+        console.error(err);
+        divErro.innerText = "Erro na comunicação com o servidor.";
         divErro.style.display = "block";
-        btnEntrar.innerText = "Entrar no Painel";
         btnEntrar.disabled = false;
-        console.error(erro);
     });
 });
