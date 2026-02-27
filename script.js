@@ -1,27 +1,37 @@
-// URL da sua API no Google Apps Script
 const API_URL = "https://script.google.com/macros/s/AKfycbyggUvTBjty9B179wuL-fe1q0I4JPtYeFbYfPJWTEc7SiGaANn6pc3JbA7E4ax2VOUn/exec";
 
+// Muda o texto dos campos dependendo se é fornecedor ou admin
+document.getElementById('tipoAcesso').addEventListener('change', function(e) {
+    const labelCodigo = document.querySelector('label[for="codigo"]');
+    if(e.target.value === 'admin') {
+        labelCodigo.innerText = 'Usuário Admin';
+        document.getElementById('codigo').placeholder = 'Seu usuário de equipe';
+    } else {
+        labelCodigo.innerText = 'Código do Fornecedor';
+        document.getElementById('codigo').placeholder = 'Ex: FORN001';
+    }
+});
+
 document.getElementById('formLogin').addEventListener('submit', function(e) {
-    e.preventDefault(); // Evita que a página recarregue
+    e.preventDefault(); 
     
+    const tipo = document.getElementById('tipoAcesso').value;
     const codigo = document.getElementById('codigo').value;
     const senha = document.getElementById('senha').value;
     const btnEntrar = document.getElementById('btnEntrar');
     const divErro = document.getElementById('mensagemErro');
     
-    // Feedback visual de carregamento
     btnEntrar.innerText = "Validando...";
     btnEntrar.disabled = true;
     divErro.style.display = "none";
 
-    // Monta o pacote de dados para enviar à API
     const dadosEnvio = {
         acao: "login",
-        id_fornecedor: codigo,
+        tipo: tipo,  // Avisa a planilha quem está tentando entrar
+        id: codigo,
         senha: senha
     };
 
-    // Faz a chamada para a sua planilha do Google
     fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify(dadosEnvio)
@@ -29,22 +39,26 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
     .then(resposta => resposta.json())
     .then(dados => {
         if(dados.status === "sucesso") {
-            // Salva os dados do fornecedor no navegador e vai para a cotação
-            localStorage.setItem("fornecedorLogado", codigo);
-            localStorage.setItem("nomeEmpresa", dados.empresa);
-            window.location.href = "cotacao.html"; 
+            // Roteamento Inteligente
+            if(dados.perfil === "admin") {
+                localStorage.setItem("adminLogado", codigo);
+                window.location.href = "admin.html"; // Joga para a sua tela
+            } else {
+                localStorage.setItem("fornecedorLogado", codigo);
+                localStorage.setItem("nomeEmpresa", dados.empresa);
+                window.location.href = "cotacao.html"; // Joga para a tela deles
+            }
         } else {
-            // Mostra o erro (ex: senha incorreta)
             divErro.innerText = dados.mensagem;
             divErro.style.display = "block";
-            btnEntrar.innerText = "Entrar no Painel";
+            btnEntrar.innerText = "Entrar";
             btnEntrar.disabled = false;
         }
     })
     .catch(erro => {
         divErro.innerText = "Erro ao conectar com o servidor.";
         divErro.style.display = "block";
-        btnEntrar.innerText = "Entrar no Painel";
+        btnEntrar.innerText = "Entrar";
         btnEntrar.disabled = false;
     });
 });
