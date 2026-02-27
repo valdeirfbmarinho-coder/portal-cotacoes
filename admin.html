@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Compras</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container" style="max-width: 1000px;">
+        <header style="background-color: #8e44ad;">
+            <h2>Visão do Comprador (Admin)</h2>
+            <div>
+                <button id="btnOrdenarMenor" class="btn-secundario" style="background-color: #27ae60; margin-right: 10px;">Filtrar Menor Preço</button>
+                <button id="btnSairAdmin" class="btn-secundario">Sair</button>
+            </div>
+        </header>
+        <div class="content">
+            <h3>Mapa de Cotações Recebidas</h3>
+            
+            <div class="table-responsive">
+                <table id="tabelaAdmin">
+                    <thead>
+                        <tr>
+                            <th>Cód. Produto</th>
+                            <th>Cód. Fornecedor</th>
+                            <th>Preço (R$)</th>
+                            <th>Marca</th>
+                            <th>Data do Envio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" style="text-align:center;">Carregando mapa de preços...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="admin.js"></script>
+</body>
+</html>

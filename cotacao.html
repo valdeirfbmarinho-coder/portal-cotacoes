@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Cotações</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h2>Olá, <span id="nomeFornecedor">Empresa</span></h2>
+            <button id="btnSair" class="btn-secundario">Sair</button>
+        </header>
+        <div class="content">
+            <h3>Cotações Abertas</h3>
+            <p>Preencha os valores e as marcas dos produtos solicitados abaixo.</p>
+            
+            <form id="formCotacao">
+                <div class="table-responsive">
+                    <table id="tabelaProdutos">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Preço Unitário (R$)</th>
+                                <th>Marca</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="3" style="text-align:center;">Buscando produtos no sistema...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit" id="btnEnviarCotacao">Enviar Proposta</button>
+                <div id="mensagemAviso"></div>
+            </form>
+        </div>
+    </div>
+    <script src="cotacao.js"></script>
+</body>
+</html>
