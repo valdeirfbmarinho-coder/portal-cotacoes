@@ -15,7 +15,6 @@ document.getElementById('tipoAcesso').addEventListener('change', function(e) {
 document.getElementById('formLogin').addEventListener('submit', function(e) {
     e.preventDefault(); 
     
-    // Captura os dados da tela
     const tipo = document.getElementById('tipoAcesso').value;
     const codigo = document.getElementById('codigo').value;
     const senha = document.getElementById('senha').value;
@@ -26,7 +25,6 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
     btnEntrar.disabled = true;
     divErro.style.display = "none";
 
-    // PACOTE DE DADOS (Aqui o 'tipo' vai para a planilha)
     const dadosEnvio = {
         acao: "login",
         tipo: tipo,
@@ -34,14 +32,17 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
         senha: senha
     };
 
+    // CORREÇÃO: Adicionado Content-Type text/plain para evitar erro de CORS do Google
     fetch(API_URL, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+        },
         body: JSON.stringify(dadosEnvio)
     })
     .then(resposta => resposta.json())
     .then(dados => {
         if(dados.status === "sucesso") {
-            // Roteamento: Separa quem vai pra qual tela
             if(dados.perfil === "admin") {
                 localStorage.setItem("adminLogado", codigo);
                 window.location.href = "admin.html";
@@ -58,9 +59,10 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
         }
     })
     .catch(erro => {
-        divErro.innerText = "Erro ao conectar com o servidor.";
+        divErro.innerText = "Erro ao conectar com o servidor. Verifique a URL do Google Sheets.";
         divErro.style.display = "block";
         btnEntrar.innerText = "Entrar no Painel";
         btnEntrar.disabled = false;
+        console.error(erro);
     });
 });
